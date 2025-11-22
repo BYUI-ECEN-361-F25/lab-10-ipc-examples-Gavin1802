@@ -1,5 +1,5 @@
 # ECEN-361 Lab-10: IPC-Examples
-     Student Name:  ___________________________________
+     Student Name:  ____Gavin Peterson____
 
 ## Introduction and Objectives of the Lab
 
@@ -79,13 +79,13 @@ debounce wait, that then starts the task(s):
 Now make sure to write the code inside of the Semaphore_Toggle_Task function that uses the provided semaphore "button_1_semaphore" to toggle LED_D4
 
 <br>
-1. How did your task ‘wait’ for the debounced button? <br>
-<mark>_______________________________________________________ </mark>
+1.) How did your task ‘wait’ for the debounced button? <br>
+<mark>We used the osWaitForever delay built into the FreeRTOS system, which waits for the dobouncing task to finish before we then toggle LED4 in the functoin. Otherwise, we wait in standby until the debouncing after a button press. This places the task into the blocked state so it consumes no CPU time until the semaphore is available.</mark>
 <br>
 <br><br>
 
 2.)	How long is the time between the button interrupt coming in and it being enabled again? <br>
-<mark>_______________________________________________________ </mark>
+<mark> 30ms, because in the StartDebounce task, there is an osDelay() of 30 ms. </mark>
 ><br>
 > <br>
 
@@ -96,11 +96,11 @@ Now create a second task (semaphore_Toggle_D3) -- <p>
 
 
 3.)	Do both of (D4 and D3) toggle with a single button press?  Describe the behavior?  <br>
-<mark>_________________________________________________________________________________<br><br>
+<mark>The behavior I observe is pressing Button1 toggles both LED3 & LED4 but not simultaneously. Because they are of the same priority, there is a race case to see which task runs. Generally, pressing the button turns on LED3 and releasing the same press toggles LED4. The order is always D3 then D4.<br><br>
 
 4.)	Now change one of the priorities of these two tasks, re-compile,  and re-run.
 How has the behavior changed?
-<mark>_________________________________________________________________________________<br><br>
+<mark>Changing the prioties means that only the task with the higher priority runs, when semaphore_Toggle_D3 has a higher priority, D4 never toggles and D3 does. And vice versa.<br><br>
 
 
 ## Part 2: Mutexes
@@ -152,12 +152,12 @@ current count. The first two processes are done for you "Mutex_CountDownTask" an
 >
 ><br>
 >7.)	Comment on the Up/Down/ ”—” display that you see.  <br><br>
-><mark>___________________________________________________________________________________________________________<br><br><p>
+><mark>It's being fought over. We see numbers incrementing/decrementing, but they are frequently interrupted by the "--" symbol. Because the new task holds the Mutex for 200ms, the display spends a significant amount of time showing dashes before releasing control back to the counting tasks.<br><br><p>
 
 
 >8.)	Is there a ‘priority’ associated with the Mutex?  If so, how can it be changed?
 ><br>  
-><mark>___________________________________________________________________________________________________________<br><br>
+><mark>No, a Mutex itself does not have a specific priority setting.<br><br>
 <p>
 
 ><br>
@@ -165,7 +165,7 @@ current count. The first two processes are done for you "Mutex_CountDownTask" an
 
 >  Change the priority of the Reset to be osPriorityIdle.  This is the lowest priority available. Note that you will not find this priority type listed in the .ioc configuration, as it is intended to be used for idle threads. This priority must be manually set in the code.<br>
 ><br> Did you see any effect on the ability of Button_3 to reset the count?<br><br>
-><mark>___________________________________________________________________________________________________________<br><br>
+><mark>It seems about the same as what previously was, I don't think it changed at all.<br><br>
 >
 ---
 <!--------------------------------------------------------------------------------->
@@ -196,12 +196,12 @@ display digit.
 >
 >10.) This timer was created via the GUI  (.IOC file).  It’s type is *“osTimerPeriodic”* which means it repeats over and over.<br><br>
 What other options can a Software Timer take to change its Type and operation? <br>
-><mark>___________________________________________________________________________________________________________<br><br>
+><mark>osTimerOnce (One-Shot)<br><br>
 
 >11).	The debounce for the switches here used an osDelay() call (non-blocking).  Is there any advantage to using a SWTimer here instead?<br>
 > Explain why or why not?
 >
-><mark>___________________________________________________________________________________________________________<br><br>
+><mark>Yes. The advantage is Memory Efficiency (RAM Usage)<br><br>
 
 
 <!--------------------------------------------------------------------------------->
@@ -216,7 +216,7 @@ What other options can a Software Timer take to change its Type and operation? <
 >2.	We only used a binary semaphore in this lab for the switch presses.  Change it so that presses are accumulated through a counting semaphore and then handled as they are taken off.<br><br>
 >Describe any issues with this approach
 >
-><mark>___________________________________________________________________________________________________________<br><br>
+><mark>The main issue is switch bouncing.We changed the MaxCount of osSemaphoreNew to be 10 instead of 1, and sometimes it will double toggle. A single noisy button press might generate 5 to 10 interrupts, causing it to trip a bit. The binary semaphore obscured this issue by ignoring the extra "bounces" while the semaphore was already full.<br><br>
 >
 
 >
