@@ -96,7 +96,7 @@ Now create a second task (semaphore_Toggle_D3) -- <p>
 
 
 3.)	Do both of (D4 and D3) toggle with a single button press?  Describe the behavior?  <br>
-<mark>The behavior I observe is pressing Button1 toggles both LED3 & LED4 but not simultaneously. Because they are of the same priority, there is a race case to see which task runs. Generally, pressing the button turns on LED3 and releasing the same press toggles LED4. The order is always D3 then D4.<br><br>
+<mark>The behavior I observe is pressing Button1 toggles both LED3 & LED4 but not simultaneously. Probably the button is bouncing physically and sending two interrupts, and because they are of the same priority, there is a race case to see which task runs. Generally, pressing the button turns on LED3 and releasing the same press toggles LED4. The order is always D3 then D4.<br><br>
 
 4.)	Now change one of the priorities of these two tasks, re-compile,  and re-run.
 How has the behavior changed?
@@ -157,7 +157,7 @@ current count. The first two processes are done for you "Mutex_CountDownTask" an
 
 >8.)	Is there a ‘priority’ associated with the Mutex?  If so, how can it be changed?
 ><br>  
-><mark>No, a Mutex itself does not have a specific priority setting.<br><br>
+><mark>No, a Mutex itself does not have a specific priority setting. However, Mutexes in FreeRTOS/CMSIS implement Priority Inheritance. <br><br>
 <p>
 
 ><br>
@@ -201,7 +201,7 @@ What other options can a Software Timer take to change its Type and operation? <
 >11).	The debounce for the switches here used an osDelay() call (non-blocking).  Is there any advantage to using a SWTimer here instead?<br>
 > Explain why or why not?
 >
-><mark>Yes. The advantage is Memory Efficiency (RAM Usage)<br><br>
+><mark>Yes. The advantage is Memory Efficiency (RAM Usage). Creating the DebounceTask required allocating a private stack of 512 bytes. osTimerNew does not require its own stack allocation as it runs within the context of the RTOS Daemon task, saving RAM.<br><br>
 
 
 <!--------------------------------------------------------------------------------->
